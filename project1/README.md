@@ -65,7 +65,7 @@ bookstore
 
 ## 代码仓库
 
-从 [CDMS.Xuan_ZHOU.2024Fall.DaSE - CDMS.Xuan_ZHOU.2024Fall.DaSE - 水杉码园 (shuishan.net.cn)](https://gitea.shuishan.net.cn/51275903093/CDMS.Xuan_ZHOU.2024Fall.DaSE/_upload/master/project1) 获取代码，并以 bookstore 文件夹为根目录打开
+从 [CDMS.Xuan_ZHOU.2024Fall.DaSE - CDMS.Xuan_ZHOU.2024Fall.DaSE - 水杉码园 (shuishan.net.cn)](https://gitea.shuishan.net.cn/51275903093/CDMS.Xuan_ZHOU.2024Fall.DaSE/src/branch/master/project1) 获取代码，并以 bookstore 文件夹为根目录打开
 代码。 请大家从公共仓库 clone 到自己仓库下，然后继续作业。
 
 
