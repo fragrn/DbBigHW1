@@ -6,6 +6,7 @@ from fe.access.new_seller import register_new_seller
 
 
 class GenBook:
+    
     def __init__(self, user_id, store_id):
         self.user_id = user_id
         self.store_id = store_id
