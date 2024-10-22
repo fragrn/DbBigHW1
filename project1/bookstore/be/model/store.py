@@ -1,54 +1,83 @@
 import logging
-import os
-import sqlite3 as sqlite
 import threading
+from pymongo import MongoClient, errors
 
 
 class Store:
-    database: str
-
     def __init__(self, db_path):
-        self.database = os.path.join(db_path, "be.db")
+        self.client = MongoClient('mongodb://localhost:27017/')
+        self.db = self.client['bookstore']
         self.init_tables()
 
     def init_tables(self):
         try:
-            conn = self.get_db_conn()
-            conn.execute(
-                "CREATE TABLE IF NOT EXISTS user ("
-                "user_id TEXT PRIMARY KEY, password TEXT NOT NULL, "
-                "balance INTEGER NOT NULL, token TEXT, terminal TEXT);"
-            )
+            self.db.create_collection("user", validator={
+                "$jsonSchema": {
+                    "bsonType": "object",
+                    "required": ["user_id", "password", "balance"],
+                    "properties": {
+                        "user_id": {"bsonType": "string"},
+                        "password": {"bsonType": "string"},
+                        "balance": {"bsonType": "int"},
+                        "token": {"bsonType": "string"},
+                        "terminal": {"bsonType": "string"}
+                    }
+                }
+            })
 
-            conn.execute(
-                "CREATE TABLE IF NOT EXISTS user_store("
-                "user_id TEXT, store_id, PRIMARY KEY(user_id, store_id));"
-            )
+            self.db.create_collection("user_store", validator={
+                "$jsonSchema": {
+                    "bsonType": "object",
+                    "required": ["user_id", "store_id"],
+                    "properties": {
+                        "user_id": {"bsonType": "string"},
+                        "store_id": {"bsonType": "string"}
+                    }
+                }
+            })
 
-            conn.execute(
-                "CREATE TABLE IF NOT EXISTS store( "
-                "store_id TEXT, book_id TEXT, book_info TEXT, stock_level INTEGER,"
-                " PRIMARY KEY(store_id, book_id))"
-            )
+            self.db.create_collection("store", validator={
+                "$jsonSchema": {
+                    "bsonType": "object",
+                    "required": ["store_id", "book_id", "book_info", "stock_level"],
+                    "properties": {
+                        "store_id": {"bsonType": "string"},
+                        "book_id": {"bsonType": "string"},
+                        "book_info": {"bsonType": "string"},
+                        "stock_level": {"bsonType": "int"}
+                    }
+                }
+            })
 
-            conn.execute(
-                "CREATE TABLE IF NOT EXISTS new_order( "
-                "order_id TEXT PRIMARY KEY, user_id TEXT, store_id TEXT)"
-            )
+            self.db.create_collection("new_order", validator={
+                "$jsonSchema": {
+                    "bsonType": "object",
+                    "required": ["order_id", "user_id", "store_id"],
+                    "properties": {
+                        "order_id": {"bsonType": "string"},
+                        "user_id": {"bsonType": "string"},
+                        "store_id": {"bsonType": "string"}
+                    }
+                }
+            })
 
-            conn.execute(
-                "CREATE TABLE IF NOT EXISTS new_order_detail( "
-                "order_id TEXT, book_id TEXT, count INTEGER, price INTEGER,  "
-                "PRIMARY KEY(order_id, book_id))"
-            )
-
-            conn.commit()
-        except sqlite.Error as e:
+            self.db.create_collection("new_order_detail", validator={
+                "$jsonSchema": {
+                    "bsonType": "object",
+                    "required": ["order_id", "book_id", "count", "price"],
+                    "properties": {
+                        "order_id": {"bsonType": "string"},
+                        "book_id": {"bsonType": "string"},
+                        "count": {"bsonType": "int"},
+                        "price": {"bsonType": "int"}
+                    }
+                }
+            })
+        except errors.PyMongoError as e:
             logging.error(e)
-            conn.rollback()
 
-    def get_db_conn(self) -> sqlite.Connection:
-        return sqlite.connect(self.database)
+    def get_db_conn(self):
+        return self.db
 
 
 database_instance: Store = None
